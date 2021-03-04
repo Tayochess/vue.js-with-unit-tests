@@ -24,11 +24,6 @@
       <div class="logo">
         <a href="/"><img src="/logo.png" alt="ГдеМатериал.Ру"></a> <!--TODO(iNerV) do dynamically link-->
       </div>
-      <div class="main-navigation__burger">
-        <button class="main-navigation__open-menu-btn">
-          Menu
-        </button>
-      </div>
       <div class="main-navigation__search">
         <input class="main-navigation__input" type="search" placeholder="search">
       </div>
@@ -40,68 +35,68 @@
           <a class="user-box__link" href="#basket">basket</a>
         </li>
       </ul>
+      <div class="main-navigation__burger">
+        <button class="main-navigation__open-menu-btn" @click="setVisibility">
+          Menu
+        </button>
+      </div>
     </nav>
-    <ul class="site-navigation">
-      <li class="site-navigation__item">
-        <a class="site-navigation__link" href="/">Category</a>
-      </li>
-      <li class="site-navigation__item">
-        <a class="site-navigation__link" href="/">Category2</a>
-      </li>
-      <li class="site-navigation__item">
-        <a class="site-navigation__link" href="/">Category3</a>
-      </li>
-      <li class="site-navigation__item">
-        <a class="site-navigation__link" href="/">Category4</a>
-      </li>
-      <li class="site-navigation__item">
-        <a class="site-navigation__link" href="/">Category5</a>
-      </li>
-      <li class="site-navigation__item">
-        <a class="site-navigation__link" href="/">Category6</a>
-      </li>
-      <li class="site-navigation__item">
-        <a class="site-navigation__link" href="/">Category7</a>
-      </li>
-      <li class="site-navigation__item">
-        <a class="site-navigation__link" href="/">Category8</a>
-      </li>
-      <li class="site-navigation__item">
-        <a class="site-navigation__link" href="/">Category9</a>
-      </li>
-      <li class="site-navigation__item">
-        <a class="site-navigation__link" href="/">Category10</a>
-      </li>
-      <li class="site-navigation__item">
-        <a class="site-navigation__link" href="/">Category11</a>
-      </li>
-      <li class="site-navigation__item">
-        <a class="site-navigation__link" href="/">Category12</a>
-      </li>
-      <li class="site-navigation__item">
-        <a class="site-navigation__link" href="/">Category13</a>
-      </li>
-      <li class="site-navigation__item">
-        <a class="site-navigation__link" href="/">Category14</a>
-      </li>
-      <li class="site-navigation__item">
-        <a class="site-navigation__link" href="/">Category15</a>
-      </li>
-      <li class="site-navigation__item">
-        <a class="site-navigation__link" href="/">Category16</a>
-      </li>
-    </ul>
+    <nav-menu v-if="menuVisibility"
+              :active="menuActive"
+              :setvisibility="setVisibility"
+    />
   </header>
 </template>
 
 <script>
+import { mapState, mapMutations } from 'vuex';
+import Menu from './menu/default.vue';
+
 export default {
   name: 'PageHeader',
+  components: {
+    'nav-menu': Menu,
+  },
+  data() {
+    return {
+      menuActive: false,
+    };
+  },
+  computed: mapState({
+    menuVisibility: (state) => state.the_menu.menu_is_visible,
+  }),
+  methods: {
+    ...mapMutations({
+      changeMenuVisibility: 'the_menu/SET_MENU_VISIBILITY',
+    }),
+
+    toggleMenuActive() {
+      this.menuActive = !this.menuActive;
+    },
+
+    setVisibility() {
+      if (!this.menuVisibility) {
+        this.changeMenuVisibility();
+        setTimeout(this.toggleMenuActive, 10);
+      } else {
+        this.toggleMenuActive();
+        setTimeout(this.changeMenuVisibility, 300);
+      }
+    },
+  },
 };
 </script>
 
 <style lang="scss" scoped>
 @import "~assets/variables.scss";
+
+.menu-active {
+  overflow: hidden;
+}
+
+.header {
+  position: relative;
+}
 
 .top-bar {
   display: flex;
@@ -144,9 +139,9 @@ export default {
   display: grid;
   align-items: center;
   grid-template-areas:
-    "burger logo user-box"
-    "search search search";
-  grid-template-columns: 100px 100px 1fr;
+  "logo user-box burger"
+  "search search search";
+  grid-template-columns: 100px 1fr 100px;
   grid-template-rows: auto;
   padding-left: 1rem;
   padding-right: 1rem;
@@ -165,6 +160,7 @@ export default {
 
   &__burger {
     grid-area: burger;
+    margin-left: 10px;
   }
 
   &__open-menu-btn {
@@ -197,6 +193,7 @@ export default {
   display: flex;
   justify-content: flex-end;
   list-style-type: none;
+  margin-right: 10px;
 
   &__items {
     display: flex;

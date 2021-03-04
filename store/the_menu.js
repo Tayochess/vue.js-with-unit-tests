@@ -12,5 +12,9 @@ export default {
     SET_MENU(state, menu) {
       Vue.set(state, 'menu', menu);
     },
+
+    SET_MENU_VISIBILITY(state) {
+      Vue.set(state, 'menu_is_visible', !state.menu_is_visible);
+    },
   },
 };
